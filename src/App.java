@@ -3,12 +3,7 @@ import java.sql.*;
 import java.util.*;
 
 public class App {
-	public static void connection() {
-		
-	}
-	
-	// NOTE: You will need to change some variables from START to END.
-	public static void main(String[] argv) throws SQLException {
+	public static Connection connection() {
 		// START
 		// Enter your username.
 		String user = "zjac268";
@@ -33,6 +28,13 @@ public class App {
 			System.out.println("ERROR: \tFailed to make connection!");
 			System.exit(1);
 		}
+
+		return connection;
+	}
+	
+	// NOTE: You will need to change some variables from START to END.
+	public static void main(String[] argv) throws SQLException {
+		Connection connection = connection();
 		// Now we're ready to use the DB. You may add your code below this line.
 		
 		//^ TESTING THE executeQuery Method
