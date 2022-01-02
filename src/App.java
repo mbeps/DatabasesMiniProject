@@ -32,10 +32,7 @@ public class App {
 		return connection;
 	}
 	
-	// NOTE: You will need to change some variables from START to END.
-	public static void main(String[] argv) throws SQLException {
-		Connection connection = connection();
-		// Now we're ready to use the DB. You may add your code below this line.
+	public static void connection_test(Connection connection) throws SQLException {
 		
 		//^ TESTING THE executeQuery Method
 		String query = "SELECT * FROM test;";
@@ -48,6 +45,11 @@ public class App {
 			e.printStackTrace();
 		}
 		rs.close();
+	}
+	// NOTE: You will need to change some variables from START to END.
+	public static void main(String[] argv) throws SQLException {
+		// Connection connection = connection();
+		connection_test(connection());
 	}
 	
 	// You can write your new methods here.
