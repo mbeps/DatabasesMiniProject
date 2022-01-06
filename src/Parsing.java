@@ -43,12 +43,22 @@ public class Parsing {
 		}
 	}
 
+	public static void splitFile(String filename) {
+		for (String line : readFileStore(filename)) {
+			for (String section : split(line)) {
+				System.out.println(section);
+			}
+		}
+	}
+
 	public static void main(String args[]) {
 		// String str = "ABR,Aberdeen Regional Airport,Aberdeen,SD";
 
 		// for (String word : split(str))
 		// 	System.out.println(word);
 
-		System.out.println(readFileStore("src/airport").get(2));
+		// System.out.println(readFileStore("src/airport").get(2));
+
+		splitFile("src/airport");
 	}
 }
