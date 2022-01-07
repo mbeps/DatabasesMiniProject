@@ -74,10 +74,10 @@ class DatabaseManagement {
 	 * @param connection (Connection): connection to database
 	 * @param tableDescription (String): layout of the table in SQL 
 	 */
-	public static void createTable(Connection connection, String tableDescription) {
+	public static void createTable(Connection connection, String tableName, String tableDescription) {
 		try {
 			Statement st = connection.createStatement();
-			st.execute("CREATE TABLE IF NOT EXISTS " + tableDescription); 
+			st.execute("CREATE TABLE IF NOT EXISTS " + tableName + tableDescription); 
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} 
@@ -169,16 +169,44 @@ class Parse {
 		}
 	}
 
+	/**
+	 * Generates a description suitable for SQL. 
+	 * Each section (entry in array) is added to a string separated by commas and speech marks are added.
+	 * @param sections (String[]): array which is changed to description
+	 * @return (String): description of the array
+	 */
+	public static String description(String[] sections) {
+		String description = "'";
+
+		for (int j = 0; j < sections.length - 1; j++) {
+			description = description + sections[j] + "'";
+			description = description + ", '";
+		}
+		description = description + sections[sections.length - 1] + "'";
+		return description;
+	}
 }
 
 public class App {
 	public static void createAirportsTable(Connection connection) {
-		String tableDescription = "";
-		DatabaseManagement.createTable(connection, tableDescription);
+		String tableDescription = "(airportCode VARCHAR(3) PRIMARY KEY, airportName VARCHAR(100), city VARCHAR(50), state VARCHAR(2));";
+		DatabaseManagement.createTable(connection, "airports",tableDescription);
+	}
+
+	public static void insertAirportsTable(Connection connection) {
+		String file = "src/airport";
+		for (int i = 0; i < Parse.readFileStore(file).size(); i++) { // Each line
+			String sections[] = Parse.split(Parse.readFileStore(file).get(i), ","); // Each section of a line
+			String description = Parse.description(sections); // Creates a description suitable for SQL
+			System.out.println(description);
+			DatabaseManagement.insert(connection, "airports", description);
+			description = ""; // Reset description 
+		}
 	}
 
 	public static void main(String[] argv) {
 		Connection connection = DatabaseManagement.establishConnection();
-		createAirportsTable(connection);
+		// createAirportsTable(connection);
+		insertAirportsTable(connection);
 	}
 }
