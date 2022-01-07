@@ -1,6 +1,9 @@
 import java.sql.*;
 
-public class App {
+/**
+ * DatabaseManagement
+ */
+class DatabaseManagement {
 	//! ADVANCED: This method is for advanced users only. You should not need to change this!
 	public static Connection connectToDatabase(String user, String password, String database) {
 		System.out.println("------ Testing PostgreSQL JDBC Connection ------");
@@ -121,30 +124,32 @@ public class App {
 			e.printStackTrace();
 		}
 	}
+}
 
+public class App {
 	public static void main(String[] argv) {
 		//^ Establish Connection
-		Connection connection = establishConnection();
+		Connection connection = DatabaseManagement.establishConnection();
 		
 		//^ Return from Database
 		String query = "SELECT * FROM branch;";
-		ResultSet resultSet = executeQuery(connection, query);
+		ResultSet resultSet = DatabaseManagement.executeQuery(connection, query);
 		
 		//^ Printing Table 
-		printTable(resultSet);
+		DatabaseManagement.printTable(resultSet);
 
 		//^ Creating Table 
 		System.out.println("Creating Table");
-		createTable(connection, "test (id SERIAL NOT NULL PRIMARY KEY, DATA VARCHAR(20));");
-		createTable(connection, "new (id SERIAL NOT NULL PRIMARY KEY, DATA VARCHAR(20));");
+		DatabaseManagement.createTable(connection, "test (id SERIAL NOT NULL PRIMARY KEY, DATA VARCHAR(20));");
+		DatabaseManagement.createTable(connection, "new (id SERIAL NOT NULL PRIMARY KEY, DATA VARCHAR(20));");
 		
 		//^ Dropping Tables
 		System.out.println("Dropping Table");
-		dropTable(connection, "new");
+		DatabaseManagement.dropTable(connection, "test");
 
 		//^ Inserting Data
 		System.out.println("Inserting Data");
 		String dataDescription = "2, 'new'";
-		insert(connection, "test", dataDescription);
+		DatabaseManagement.insert(connection, "new", dataDescription);
 	}
 }
