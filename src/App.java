@@ -94,23 +94,44 @@ public class App {
 		}
 	}
 
-	public static void main(String[] argv) throws SQLException {
-		//^ Establish Connection
-		Connection connection = establishConnection();
-		
-		//£ Now we're ready to use the DB. You may add your code below this line.
-		//^ Return from Database
-		String query = "SELECT * FROM branch;";
-		ResultSet resultSet = executeQuery(connection, query);
-		//^ Printing Table 
+	/**
+	 * Inserts data into desired table. 
+	 * @param connection (Connection): connection to the database
+	 * @param tableName (String): name of the table where data needs to inserted
+	 * @param dataDescription (String): data to be inserted separated by ','
+	 */
+	public static void insert(Connection connection, String tableName, String dataDescription) {
+		try {
+			Statement statement = connection.createStatement();
+			String sql = "INSERT INTO " + tableName + " VALUES (" + dataDescription + ");";
+			statement.executeUpdate(sql);
+		} catch (SQLException e) {
+			System.out.println("ERROR: Could not insert data");
+			e.printStackTrace();
+		}
+	}
+
+	public static void printTable(ResultSet resultSet) {
 		try {
 			while (resultSet.next()) {
 				System.out.printf("%s %s %s %n", resultSet.getString(1), resultSet.getString(2), resultSet.getString(3));
 			}
+			resultSet.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		resultSet.close();
+	}
+
+	public static void main(String[] argv) {
+		//^ Establish Connection
+		Connection connection = establishConnection();
+		
+		//^ Return from Database
+		String query = "SELECT * FROM branch;";
+		ResultSet resultSet = executeQuery(connection, query);
+		
+		//^ Printing Table 
+		printTable(resultSet);
 
 		//^ Creating Table 
 		System.out.println("Creating Table");
@@ -120,5 +141,10 @@ public class App {
 		//^ Dropping Tables
 		System.out.println("Dropping Table");
 		dropTable(connection, "new");
+
+		//^ Inserting Data
+		System.out.println("Inserting Data");
+		String dataDescription = "2, 'new'";
+		insert(connection, "test", dataDescription);
 	}
 }
