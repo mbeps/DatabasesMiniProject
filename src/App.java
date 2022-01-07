@@ -1,7 +1,11 @@
+import java.io.*;
 import java.sql.*;
+import java.util.*;
 
 /**
- * DatabaseManagement
+ * Manages database by providing functionalities. 
+ * Method included to connect to database. 
+ * Methods included for manipulating database.
  */
 class DatabaseManagement {
 	//! ADVANCED: This method is for advanced users only. You should not need to change this!
@@ -126,30 +130,55 @@ class DatabaseManagement {
 	}
 }
 
+/**
+ * Provides functionalities to read files and split them. 
+ */
+class Parse {
+	/**
+	 * Reads string and splits every time there is a comma `,`.
+	 * 
+	 * @param text (String): string that needs to be split
+	 */
+	public static String[] split(String text, String symbol) {
+		return text.split(symbol);
+	}
+
+	/**
+	 * Reads a file line.
+	 * Each line is added to an array which is then returned.
+	 * 
+	 * @param filename (String): name of the to be read
+	 * @return (ArrayList): array where all the lines in the file are stored
+	 */
+	public static ArrayList<String> readFileStore(String filename) {
+		try {
+			File file = new File(filename);
+			Scanner myReader = new Scanner(file);
+			ArrayList<String> line = new ArrayList<String>();
+
+			while (myReader.hasNextLine()) {
+				// Add the next line into the array
+				line.add(myReader.nextLine());
+			}
+			myReader.close();
+			return line;
+		} catch (FileNotFoundException e) {
+			System.out.println("File not found");
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+}
+
 public class App {
+	public static void createAirportsTable(Connection connection) {
+		String tableDescription = "";
+		DatabaseManagement.createTable(connection, tableDescription);
+	}
+
 	public static void main(String[] argv) {
-		//^ Establish Connection
 		Connection connection = DatabaseManagement.establishConnection();
-		
-		//^ Return from Database
-		String query = "SELECT * FROM branch;";
-		ResultSet resultSet = DatabaseManagement.executeQuery(connection, query);
-		
-		//^ Printing Table 
-		DatabaseManagement.printTable(resultSet);
-
-		//^ Creating Table 
-		System.out.println("Creating Table");
-		DatabaseManagement.createTable(connection, "test (id SERIAL NOT NULL PRIMARY KEY, DATA VARCHAR(20));");
-		DatabaseManagement.createTable(connection, "new (id SERIAL NOT NULL PRIMARY KEY, DATA VARCHAR(20));");
-		
-		//^ Dropping Tables
-		System.out.println("Dropping Table");
-		DatabaseManagement.dropTable(connection, "test");
-
-		//^ Inserting Data
-		System.out.println("Inserting Data");
-		String dataDescription = "2, 'new'";
-		DatabaseManagement.insert(connection, "new", dataDescription);
+		createAirportsTable(connection);
 	}
 }
