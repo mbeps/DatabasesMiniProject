@@ -203,10 +203,32 @@ public class App {
 			description = ""; // Reset description 
 		}
 	}
+	
+	public static void createDelayedFlightsTable(Connection connection) {
+		String tableDescription = "(ID INT PRIMARY KEY, Month INT, DayofMonth INT, DayOfWeek INT, DepTime INT, ScheduledDepTime INT, ArrTime INT, ScheduledArrTime INT, UniqueCarrier VARCHAR(2), FlightNum INT, ActualFlightTime INT, ScheduledFlightTime INT, AirTime INT, ArrDelay INT, DepDelay INT, Orig VARCHAR(3), Dest VARCHAR(3), Distance INT);";
+		DatabaseManagement.createTable(connection, "delayedFlights",tableDescription);
+	}
+
+	public static void insertDelayedFlightsTable(Connection connection) {
+		String file = "src/delayedFlights";
+		for (int i = 0; i < Parse.readFileStore(file).size(); i++) { // Each line
+			String sections[] = Parse.split(Parse.readFileStore(file).get(i), ","); // Each section of a line
+			
+			String description = String.format("%d, %d, %d, %d, %d, %d, %d, %d, '%s', %d, %d, %d, %d, %d, %d, '%s', '%s', %d", 
+			Integer.parseInt(sections[0]), Integer.parseInt(sections[1]),Integer.parseInt(sections[2]),Integer.parseInt(sections[3]),Integer.parseInt(sections[4]),Integer.parseInt(sections[5]),Integer.parseInt(sections[6]),Integer.parseInt(sections[7]),sections[8],Integer.parseInt(sections[9]),Integer.parseInt(sections[10]),Integer.parseInt(sections[11]),Integer.parseInt(sections[12]),Integer.parseInt(sections[13]),Integer.parseInt(sections[14]),sections[15],sections[16],Integer.parseInt(sections[17]));
+
+			System.out.println(description);
+			DatabaseManagement.insert(connection, "delayedFlights", description);
+			description = ""; // Reset description 
+		}
+	}
 
 	public static void main(String[] argv) {
 		Connection connection = DatabaseManagement.establishConnection();
 		// createAirportsTable(connection);
-		insertAirportsTable(connection);
+		// insertAirportsTable(connection);
+
+		// createDelayedFlightsTable(connection);
+		insertDelayedFlightsTable(connection);
 	}
 }
