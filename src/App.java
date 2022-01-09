@@ -63,8 +63,10 @@ class DatabaseManagement {
 	public static void dropTable(Connection connection, String table) {
 		try {
 			Statement statement = connection.createStatement();
-			statement.execute("DROP TABLE IF EXISTS " + table); 
+			statement.execute(String.format("DROP TABLE IF EXISTS %s", table)); 
+			System.out.printf("SUCCESS: Table Dropped \n%s\n\n", table);
 		} catch (SQLException e) {
+			System.out.printf("ERROR: Table Not Dropped \n%s\n\n", table);
 			e.printStackTrace();
 		} 
 	}
@@ -72,13 +74,16 @@ class DatabaseManagement {
 	/**
 	 * Creates a new table if it does not exist already in the database.
 	 * @param connection (Connection): connection to database
-	 * @param tableDescription (String): layout of the table in SQL 
+	 * @param table (String): name of the table
+	 * @param description (String): layout of the table in SQL 
 	 */
-	public static void createTable(Connection connection, String tableName, String tableDescription) {
+	public static void createTable(Connection connection, String table, String description) {
 		try {
-			Statement st = connection.createStatement();
-			st.execute("CREATE TABLE IF NOT EXISTS " + tableName + tableDescription); 
+			Statement statement = connection.createStatement();
+			statement.execute(String.format("CREATE TABLE IF NOT EXISTS %s %s", table, description)); 
+			System.out.printf("SUCCESS: Table Created \n%s %s \n\n", table, description);
 		} catch (SQLException e) {
+			System.out.printf("ERROR: Table Not Created \n%s %s \n\n", table, description);
 			e.printStackTrace();
 		} 
 	}
@@ -94,8 +99,10 @@ class DatabaseManagement {
 		try {
 			Statement statement = connection.createStatement();
 			ResultSet resultSet = statement.executeQuery(query);
+			System.out.printf("SUCCESS: Statement Executed \n%s\n\n", query);
 			return resultSet;
 		} catch (SQLException e) {
+			System.out.printf("ERROR: Statement Not Executed \n%s\n\n", query);
 			e.printStackTrace();
 			return null;
 		}
@@ -104,16 +111,16 @@ class DatabaseManagement {
 	/**
 	 * Inserts data into desired table. 
 	 * @param connection (Connection): connection to the database
-	 * @param tableName (String): name of the table where data needs to inserted
-	 * @param dataDescription (String): data to be inserted separated by ','
+	 * @param table (String): name of the table where data needs to inserted
+	 * @param data (String): data to be inserted separated by ','
 	 */
-	public static void insert(Connection connection, String tableName, String dataDescription) {
+	public static void insert(Connection connection, String table, String data) {
 		try {
 			Statement statement = connection.createStatement();
-			String sql = "INSERT INTO " + tableName + " VALUES (" + dataDescription + ");";
-			statement.executeUpdate(sql);
+			statement.executeUpdate(String.format("INSERT INTO %s VALUES (%s);", table, data));
+			System.out.printf("SUCCESS: Data Inserted\n%s\n\n", data);
 		} catch (SQLException e) {
-			System.out.println("ERROR: Could not insert data");
+			System.out.printf("ERROR: Data Not Inserted\n%s\n\n", data);
 			e.printStackTrace();
 		}
 	}
@@ -122,9 +129,11 @@ class DatabaseManagement {
 		try {
 			while (resultSet.next()) {
 				System.out.printf("%s %s %s %n", resultSet.getString(1), resultSet.getString(2), resultSet.getString(3));
+				// System.out.println("SUCCESS: Table Printed");
 			}
 			resultSet.close();
 		} catch (SQLException e) {
+			System.out.println("ERROR: Table Not Printed");
 			e.printStackTrace();
 		}
 	}
@@ -206,7 +215,7 @@ public class App {
 			}
 			description = description + sections[sections.length - 1] + "'";
 
-			System.out.println(description);
+			// System.out.println(description);
 			DatabaseManagement.insert(connection, "airports", description);
 			description = ""; // Reset description 
 		}
@@ -225,7 +234,7 @@ public class App {
 			String description = String.format("%d, %d, %d, %d, %d, %d, %d, %d, '%s', %d, %d, %d, %d, %d, %d, '%s', '%s', %d", 
 			Integer.parseInt(sections[0]), Integer.parseInt(sections[1]),Integer.parseInt(sections[2]),Integer.parseInt(sections[3]),Integer.parseInt(sections[4]),Integer.parseInt(sections[5]),Integer.parseInt(sections[6]),Integer.parseInt(sections[7]),sections[8],Integer.parseInt(sections[9]),Integer.parseInt(sections[10]),Integer.parseInt(sections[11]),Integer.parseInt(sections[12]),Integer.parseInt(sections[13]),Integer.parseInt(sections[14]),sections[15],sections[16],Integer.parseInt(sections[17]));
 
-			System.out.println(description);
+			// System.out.println(description);
 			DatabaseManagement.insert(connection, "delayedFlights", description);
 			description = ""; // Reset description 
 		}
@@ -234,13 +243,13 @@ public class App {
 	public static void main(String[] argv) {
 		Connection connection = DatabaseManagement.establishConnection();
 		
-		DatabaseManagement.dropTable(connection, "airports");
 		DatabaseManagement.dropTable(connection, "delayedFlights");
+		DatabaseManagement.dropTable(connection, "airports");
 		
 		createAirportsTable(connection);
-		insertAirportsTable(connection);
-
 		createDelayedFlightsTable(connection);
+
+		insertAirportsTable(connection);
 		insertDelayedFlightsTable(connection);
 	}
 }
