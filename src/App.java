@@ -197,7 +197,15 @@ public class App {
 		String file = "src/airport";
 		for (int i = 0; i < Parse.readFileStore(file).size(); i++) { // Each line
 			String sections[] = Parse.split(Parse.readFileStore(file).get(i), ","); // Each section of a line
-			String description = Parse.description(sections); // Creates a description suitable for SQL
+			
+			//^ Creates a description suitable for SQL
+			String description = "'"; 
+			for (int j = 0; j < sections.length - 1; j++) {
+				description = description + sections[j] + "'";
+				description = description + ", '";
+			}
+			description = description + sections[sections.length - 1] + "'";
+
 			System.out.println(description);
 			DatabaseManagement.insert(connection, "airports", description);
 			description = ""; // Reset description 
@@ -205,7 +213,7 @@ public class App {
 	}
 	
 	public static void createDelayedFlightsTable(Connection connection) {
-		String tableDescription = "(ID INT PRIMARY KEY, Month INT, DayofMonth INT, DayOfWeek INT, DepTime INT, ScheduledDepTime INT, ArrTime INT, ScheduledArrTime INT, UniqueCarrier VARCHAR(2), FlightNum INT, ActualFlightTime INT, ScheduledFlightTime INT, AirTime INT, ArrDelay INT, DepDelay INT, Orig VARCHAR(3), Dest VARCHAR(3), Distance INT);";
+		String tableDescription = "(ID INT PRIMARY KEY, Month INT, DayofMonth INT, DayOfWeek INT, DepTime INT, ScheduledDepTime INT, ArrTime INT, ScheduledArrTime INT, UniqueCarrier VARCHAR(2), FlightNum INT, ActualFlightTime INT, ScheduledFlightTime INT, AirTime INT, ArrDelay INT, DepDelay INT, Orig VARCHAR(3), Dest VARCHAR(3), Distance INT, FOREIGN KEY (Orig) REFERENCES airports(airportCode), FOREIGN KEY (Dest) REFERENCES airports(airportCode));";
 		DatabaseManagement.createTable(connection, "delayedFlights",tableDescription);
 	}
 
@@ -225,10 +233,14 @@ public class App {
 
 	public static void main(String[] argv) {
 		Connection connection = DatabaseManagement.establishConnection();
-		// createAirportsTable(connection);
-		// insertAirportsTable(connection);
+		
+		DatabaseManagement.dropTable(connection, "airports");
+		DatabaseManagement.dropTable(connection, "delayedFlights");
+		
+		createAirportsTable(connection);
+		insertAirportsTable(connection);
 
-		// createDelayedFlightsTable(connection);
+		createDelayedFlightsTable(connection);
 		insertDelayedFlightsTable(connection);
 	}
 }
