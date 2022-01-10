@@ -296,6 +296,12 @@ public class App {
 		DatabaseManagement.printTableQuery(connection, query);	
 	}
 
+	public static void delayedFlightsQuery3(Connection connection) {
+		System.out.println("Query 3");
+		String query = "SELECT DISTINCT dest, SUM(arrdelay) FROM \"delayedflights\" GROUP BY dest ORDER BY SUM(arrdelay) DESC LIMIT 5 OFFSET 1;";
+		DatabaseManagement.printTableQuery(connection, query);	
+	}
+
 	public static void main(String[] argv) {
 		Connection connection = DatabaseManagement.establishConnection();
 		
@@ -311,5 +317,6 @@ public class App {
 		// DatabaseManagement.printTable(connection, "airports");
 		delayedFlightsQuery1(connection);
 		delayedFightsQuery2(connection);
+		delayedFlightsQuery3(connection);
 	}
 }
