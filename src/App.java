@@ -144,14 +144,13 @@ class DatabaseManagement {
 	}
 
 	/**
-	 * Prints the data in a given table. 
+	 * Prints the data in a table given a query. 
 	 * Data is printed row by row. 
 	 * @param connection (Connection): connection to database
-	 * @param table (String): name of table
+	 * @param query (String): query for which table is printed
 	 */
-	public static void printTable(Connection connection, String table) {
+	public static void printTableQuery(Connection connection, String query) {
 		try {
-			String query = "SELECT * FROM " + table;
 			ResultSet resultSet = executeQuery(connection, query);
 			
 			String data = "";
@@ -169,6 +168,18 @@ class DatabaseManagement {
 			System.out.println("ERROR: Table Not Printed");
 			e.printStackTrace();
 		}
+	}
+
+	/**
+	 * Prints the data for a given table. 
+	 * Data is printed row by row. 
+	 * Methods depends on {@link #printTableQuery(Connection, String)}.
+	 * @param connection (Connection): connection to the database
+	 * @param table (String): name of the table
+	 */
+	public static void printTable(Connection connection, String table) {
+		String query = "SELECT * FROM " + table;
+		printTableQuery(connection, query);
 	}
 }
 
