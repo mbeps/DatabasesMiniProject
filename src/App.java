@@ -285,8 +285,15 @@ public class App {
 	}
 
 	public static void delayedFlightsQuery1(Connection connection) {
+		System.out.println("Query 1");
 		String query = "SELECT DISTINCT UniqueCarrier, COUNT(uniquecarrier) FROM \"delayedflights\" WHERE (depdelay > 0 OR arrdelay > 0) GROUP BY uniquecarrier ORDER BY COUNT(uniquecarrier) DESC LIMIT 5;";
 		DatabaseManagement.printTableQuery(connection, query);
+	}
+
+	public static void delayedFightsQuery2(Connection connection) {
+		System.out.println("Query 2");
+		String query = "SELECT DISTINCT airports.city, COUNT(airports.city) FROM \"airports\" JOIN \"delayedflights\" ON airports.airportcode = delayedflights.dest WHERE delayedFlights.depdelay > 0 GROUP BY airports.city ORDER BY COUNT(airports.city) DESC limit 5;";
+		DatabaseManagement.printTableQuery(connection, query);	
 	}
 
 	public static void main(String[] argv) {
@@ -303,5 +310,6 @@ public class App {
 
 		// DatabaseManagement.printTable(connection, "airports");
 		delayedFlightsQuery1(connection);
+		delayedFightsQuery2(connection);
 	}
 }
