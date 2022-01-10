@@ -284,6 +284,11 @@ public class App {
 		}
 	}
 
+	public static void delayedFlightsQuery1(Connection connection) {
+		String query = "SELECT DISTINCT UniqueCarrier, COUNT(uniquecarrier) FROM \"delayedflights\" WHERE (depdelay > 0 OR arrdelay > 0) GROUP BY uniquecarrier ORDER BY COUNT(uniquecarrier) DESC LIMIT 5;";
+		DatabaseManagement.printTableQuery(connection, query);
+	}
+
 	public static void main(String[] argv) {
 		Connection connection = DatabaseManagement.establishConnection();
 		
@@ -296,6 +301,7 @@ public class App {
 		// insertAirportsTable(connection);
 		// insertDelayedFlightsTable(connection);
 
-		DatabaseManagement.printTable(connection, "airports");
+		// DatabaseManagement.printTable(connection, "airports");
+		delayedFlightsQuery1(connection);
 	}
 }
