@@ -125,13 +125,46 @@ class DatabaseManagement {
 		}
 	}
 
-	public static void printTable(ResultSet resultSet) {
+	/**
+	 * Returns the number of columns from a given result set. 
+	 * If the number of columns cannot be determined, -1 is returned.
+	 * @param resultSet (ResultSet): result set from which the number of columns is computed
+	 * @return (int): the number of columns
+	 */
+	public static int getColumnCount(ResultSet resultSet) {
 		try {
+			ResultSetMetaData metadata = resultSet.getMetaData();
+			int columns = metadata.getColumnCount();
+			return columns;
+		} catch (SQLException e) {
+			System.out.println("ERROR: Could Not Determine Number of Columns");
+			e.printStackTrace();
+			return -1; // Invalid 
+		}
+	}
+
+	/**
+	 * Prints the data in a given table. 
+	 * Data is printed row by row. 
+	 * @param connection (Connection): connection to database
+	 * @param table (String): name of table
+	 */
+	public static void printTable(Connection connection, String table) {
+		try {
+			String query = "SELECT * FROM " + table;
+			ResultSet resultSet = executeQuery(connection, query);
+			
+			String data = "";
 			while (resultSet.next()) {
-				System.out.printf("%s %s %s %n", resultSet.getString(1), resultSet.getString(2), resultSet.getString(3));
-				// System.out.println("SUCCESS: Table Printed");
+				for (int i = 1; i <= getColumnCount(resultSet); i++) {
+					data = data + resultSet.getString(i) + ", ";
+				}
+				data = data + "\n"; // New line for each row
 			}
+			System.out.println(data);
 			resultSet.close();
+			System.out.println("SUCCESS: Table Printed");
+			// return data // All rows are concatenated into 1 variable incase it ever needs to be returned
 		} catch (SQLException e) {
 			System.out.println("ERROR: Table Not Printed");
 			e.printStackTrace();
@@ -243,13 +276,15 @@ public class App {
 	public static void main(String[] argv) {
 		Connection connection = DatabaseManagement.establishConnection();
 		
-		DatabaseManagement.dropTable(connection, "delayedFlights");
-		DatabaseManagement.dropTable(connection, "airports");
+		// DatabaseManagement.dropTable(connection, "delayedFlights");
+		// DatabaseManagement.dropTable(connection, "airports");
 		
-		createAirportsTable(connection);
-		createDelayedFlightsTable(connection);
+		// createAirportsTable(connection);
+		// createDelayedFlightsTable(connection);
 
-		insertAirportsTable(connection);
-		insertDelayedFlightsTable(connection);
+		// insertAirportsTable(connection);
+		// insertDelayedFlightsTable(connection);
+
+		DatabaseManagement.printTable(connection, "airports");
 	}
 }
