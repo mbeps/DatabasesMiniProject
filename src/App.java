@@ -205,18 +205,22 @@ class Parse {
 	 */
 	public static ArrayList<String> readFileStore(String filename) {
 		try {
-			File file = new File(filename);
-			Scanner myReader = new Scanner(file);
+			String current;
+			BufferedReader reader = new BufferedReader(new FileReader(filename));
+
 			ArrayList<String> line = new ArrayList<String>();
 
-			while (myReader.hasNextLine()) {
+			while ((current = reader.readLine()) != null) {
 				// Add the next line into the array
-				line.add(myReader.nextLine());
+				line.add(current);
 			}
-			myReader.close();
+			reader.close();
 			return line;
 		} catch (FileNotFoundException e) {
-			System.out.println("File not found");
+			System.out.println("File Not Found");
+			e.printStackTrace();
+			return null;
+		} catch (IOException e) {
 			e.printStackTrace();
 			return null;
 		}
@@ -242,11 +246,13 @@ class Parse {
 
 public class App {
 	public static void createAirportsTable(Connection connection) {
+		System.out.println("########### Creating Airports Table ###########");
 		String tableDescription = "(airportCode VARCHAR(3) PRIMARY KEY, airportName VARCHAR(100), city VARCHAR(50), state VARCHAR(2));";
 		DatabaseManagement.createTable(connection, "airports",tableDescription);
 	}
 
 	public static void insertAirportsTable(Connection connection) {
+		System.out.println("########### Inserting into Airports Table ###########");
 		String file = "src/airport";
 		for (int i = 0; i < Parse.readFileStore(file).size(); i++) { // Each line
 			String sections[] = Parse.split(Parse.readFileStore(file).get(i), ","); // Each section of a line
@@ -266,11 +272,13 @@ public class App {
 	}
 	
 	public static void createDelayedFlightsTable(Connection connection) {
+		System.out.println("########### Creating Delayed Flights Table ###########");
 		String tableDescription = "(ID INT PRIMARY KEY, Month INT, DayofMonth INT, DayOfWeek INT, DepTime INT, ScheduledDepTime INT, ArrTime INT, ScheduledArrTime INT, UniqueCarrier VARCHAR(2), FlightNum INT, ActualFlightTime INT, ScheduledFlightTime INT, AirTime INT, ArrDelay INT, DepDelay INT, Orig VARCHAR(3), Dest VARCHAR(3), Distance INT, FOREIGN KEY (Orig) REFERENCES airports(airportCode), FOREIGN KEY (Dest) REFERENCES airports(airportCode));";
 		DatabaseManagement.createTable(connection, "delayedFlights",tableDescription);
 	}
 
 	public static void insertDelayedFlightsTable(Connection connection) {
+		System.out.println("########### Inserting into Delayed Flights Table ###########");
 		String file = "src/delayedFlights";
 		for (int i = 0; i < Parse.readFileStore(file).size(); i++) { // Each line
 			String sections[] = Parse.split(Parse.readFileStore(file).get(i), ","); // Each section of a line
@@ -285,19 +293,19 @@ public class App {
 	}
 
 	public static void delayedFlightsQuery1(Connection connection) {
-		System.out.println("Query 1");
+		System.out.println("########### Query 1 ###########");
 		String query = "SELECT DISTINCT UniqueCarrier, COUNT(uniquecarrier) FROM \"delayedflights\" WHERE (depdelay > 0 OR arrdelay > 0) GROUP BY uniquecarrier ORDER BY COUNT(uniquecarrier) DESC LIMIT 5;";
 		DatabaseManagement.printTableQuery(connection, query);
 	}
 
 	public static void delayedFightsQuery2(Connection connection) {
-		System.out.println("Query 2");
+		System.out.println("########### Query 2 ###########");
 		String query = "SELECT DISTINCT airports.city, COUNT(airports.city) FROM \"airports\" JOIN \"delayedflights\" ON airports.airportcode = delayedflights.dest WHERE delayedFlights.depdelay > 0 GROUP BY airports.city ORDER BY COUNT(airports.city) DESC limit 5;";
 		DatabaseManagement.printTableQuery(connection, query);	
 	}
 
 	public static void delayedFlightsQuery3(Connection connection) {
-		System.out.println("Query 3");
+		System.out.println("########### Query 3 ###########");
 		String query = "SELECT DISTINCT dest, SUM(arrdelay) FROM \"delayedflights\" GROUP BY dest ORDER BY SUM(arrdelay) DESC LIMIT 5 OFFSET 1;";
 		DatabaseManagement.printTableQuery(connection, query);	
 	}
@@ -314,7 +322,7 @@ public class App {
 		// insertAirportsTable(connection);
 		// insertDelayedFlightsTable(connection);
 
-		// DatabaseManagement.printTable(connection, "airports");
+		// // DatabaseManagement.printTable(connection, "airports");
 		delayedFlightsQuery1(connection);
 		delayedFightsQuery2(connection);
 		delayedFlightsQuery3(connection);
