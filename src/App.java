@@ -95,11 +95,11 @@ class DatabaseManagement {
 	 * @return (ResultSet): returns result set to the query
 	 */
 	public static ResultSet executeQuery(Connection connection, String query) {
-		System.out.println("DEBUG: Executing Query");
+		// System.out.println("DEBUG: Executing Query");
 		try {
 			Statement statement = connection.createStatement();
 			ResultSet resultSet = statement.executeQuery(query);
-			System.out.printf("SUCCESS: Statement Executed \n%s\n\n", query);
+			// System.out.printf("SUCCESS: Statement Executed \n%s\n\n", query);
 			return resultSet;
 		} catch (SQLException e) {
 			System.out.printf("ERROR: Statement Not Executed \n%s\n\n", query);
@@ -156,13 +156,13 @@ class DatabaseManagement {
 			String data = "";
 			while (resultSet.next()) {
 				for (int i = 1; i <= getColumnCount(resultSet); i++) {
-					data = data + resultSet.getString(i) + ", ";
+					data = data + resultSet.getString(i) + " ";
 				}
 				data = data + "\n"; // New line for each row
 			}
 			System.out.println(data);
 			resultSet.close();
-			System.out.println("SUCCESS: Table Printed");
+			// System.out.println("SUCCESS: Table Printed");
 			// return data // All rows are concatenated into 1 variable incase it ever needs to be returned
 		} catch (SQLException e) {
 			System.out.println("ERROR: Table Not Printed");
@@ -292,20 +292,20 @@ public class App {
 		}
 	}
 
-	public static void delayedFlightsQuery1(Connection connection) {
-		System.out.println("########### Query 1 ###########");
+	public static void query1(Connection connection) {
+		System.out.println("########### 1st Query ###########");
 		String query = "SELECT DISTINCT UniqueCarrier, COUNT(uniquecarrier) FROM \"delayedflights\" WHERE (depdelay > 0 OR arrdelay > 0) GROUP BY uniquecarrier ORDER BY COUNT(uniquecarrier) DESC LIMIT 5;";
 		DatabaseManagement.printTableQuery(connection, query);
 	}
 
-	public static void delayedFightsQuery2(Connection connection) {
-		System.out.println("########### Query 2 ###########");
-		String query = "SELECT DISTINCT airports.city, COUNT(airports.city) FROM \"airports\" JOIN \"delayedflights\" ON airports.airportcode = delayedflights.dest WHERE delayedFlights.depdelay > 0 GROUP BY airports.city ORDER BY COUNT(airports.city) DESC limit 5;";
+	public static void query2(Connection connection) {
+		System.out.println("########### 2nd Query ###########");
+		String query = "SELECT DISTINCT airports.city, COUNT(depdelay) FROM \"airports\" JOIN \"delayedflights\" ON airports.airportcode = delayedflights.dest WHERE delayedFlights.depdelay > 0 GROUP BY airports.city ORDER BY COUNT(depdelay) DESC limit 5;";
 		DatabaseManagement.printTableQuery(connection, query);	
 	}
 
-	public static void delayedFlightsQuery3(Connection connection) {
-		System.out.println("########### Query 3 ###########");
+	public static void query3(Connection connection) {
+		System.out.println("########### 3rd Query ###########");
 		String query = "SELECT DISTINCT dest, SUM(arrdelay) FROM \"delayedflights\" GROUP BY dest ORDER BY SUM(arrdelay) DESC LIMIT 5 OFFSET 1;";
 		DatabaseManagement.printTableQuery(connection, query);	
 	}
@@ -322,9 +322,9 @@ public class App {
 		// insertAirportsTable(connection);
 		// insertDelayedFlightsTable(connection);
 
-		// // DatabaseManagement.printTable(connection, "airports");
-		delayedFlightsQuery1(connection);
-		delayedFightsQuery2(connection);
-		delayedFlightsQuery3(connection);
+		// DatabaseManagement.printTable(connection, "airports");
+		query1(connection);
+		query2(connection);
+		query3(connection);
 	}
 }

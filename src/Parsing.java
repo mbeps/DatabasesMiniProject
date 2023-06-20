@@ -59,7 +59,6 @@ public class Parsing {
 
 		String line = readFileStore("src/airport").get(5);
 		for (int i = 0; i < readFileStore("src/airport").size(); i++) {
-			// System.out.println(readFileStore("src/airport").get(i));
 			String sections[] = split(readFileStore("src/airport").get(i));
 			for (String section : sections) {
 				System.out.println(section);
